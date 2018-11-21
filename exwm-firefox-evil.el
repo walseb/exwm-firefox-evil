@@ -170,12 +170,11 @@ Firefox variant can be assigned in 'exwm-firefox-evil-firefox-name`"
 (evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "C-r") 'exwm-firefox-core-redo)
 (evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "d") 'exwm-firefox-core-cut)
 (evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "c") 'exwm-firefox-core-cut)
+(evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "C") 'exwm-firefox-core-cut)
 
 ;; Select all and stop user from entering visual and insert state
 (evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "C-v") 'exwm-firefox-core-select-all)
 (evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "V") 'exwm-firefox-core-select-all)
-(evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "c") 'exwm-firefox-core-select-all)
-(evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "c") 'exwm-firefox-core-select-all)
 
 ;; Pass through esc when in normal mode
 (evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "<escape>") 'exwm-firefox-core-cancel)
@@ -197,10 +196,15 @@ Firefox variant can be assigned in 'exwm-firefox-evil-firefox-name`"
 ;; Editing
 (evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "y") 'exwm-firefox-core-copy)
 (evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "d") 'exwm-firefox-core-cut)
-(evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "c")
-  '(lambda () (interactive)
-     (exwm-firefox-core-cut)
-     (exwm-firefox-evil-insert)))
+
+(defun exwm-firefox-evil-visual-change ()
+  "Change text in visual mode."
+  (interactive)
+  (exwm-firefox-core-cut)
+  (exwm-firefox-evil-insert))
+
+(evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "c") 'exwm-firefox-evil-visual-change)
+(evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "C") 'exwm-firefox-evil-visual-change)
 
 (evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "r") 'exwm-firefox-core-cut)
 (evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "R") 'exwm-firefox-core-cut)
