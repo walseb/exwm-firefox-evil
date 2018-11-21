@@ -21,8 +21,8 @@
 
 ;;; Commentary:
 
-;; This package implements the functions defined in exwm-firefox-core to work
-;; well with evil-mode
+;; This package implements exwm-firefox-core to allow for modal editing in
+;; firefox like in evil-mode and vi
 ;;
 ;; To get link-hints you have to define a new key like below and download a
 ;; link-hint addon to firefox.
