@@ -35,24 +35,27 @@
 
 ;;; Mode
 (defvar exwm-firefox-evil-mode-map (make-sparse-keymap))
+
 (define-minor-mode exwm-firefox-evil-mode nil nil nil exwm-firefox-evil-mode-map)
 
 ;;;; Activation
-(defvar exwm-firefox-evil-firefox-name '("Firefox" "Icecat")
-  "The class name used for detecting if a firefox buffer is selected.")
-
 (defun exwm-firefox-evil-mode-enable ()
   "Enable 'exwm-firefox-evil-mode`."
+  (interactive)
   (add-hook 'exwm-manage-finish-hook 'exwm-firefox-evil-activate))
 
 (defun exwm-firefox-evil-mode-disable ()
   "Disable 'exwm-firefox-evil-mode`."
+  (interactive)
   (remove-hook 'exwm-manage-finish-hook 'exwm-firefox-evil-activate))
+
+(defvar exwm-firefox-evil-firefox-class-name '("Firefox" "Icecat")
+  "The class name used for detecting if a firefox buffer is selected.")
 
 (defun exwm-firefox-evil-activate ()
   "Activates exwm-firefox mode when buffer is firefox.
 Firefox variant can be assigned in 'exwm-firefox-evil-firefox-name`"
-  (if (member exwm-firefox-evil-firefox-name exwm-firefox-evil-firefox-name)
+  (if (member exwm-class-name exwm-firefox-evil-firefox-class-name)
       (progn
 	(exwm-firefox-evil-mode 1)
 	(setq exwm-input-line-mode-passthrough t))))
@@ -61,15 +64,14 @@ Firefox variant can be assigned in 'exwm-firefox-evil-firefox-name`"
 (defun exwm-firefox-evil-normal ()
   "Pass every key directly to Emacs."
   (interactive)
-  (setq exwm-input-line-mode-passthrough t))
+  (setq exwm-input-line-mode-passthrough t)
+  (evil-normal-state))
 
 (defun exwm-firefox-evil-insert ()
   "Pass every key to firefox."
   (interactive)
-  (setq exwm-input-line-mode-passthrough nil))
-
-(add-hook 'evil-normal-state-entry-hook 'exwm-firefox-evil-normal)
-(add-hook 'evil-insert-state-entry-hook 'exwm-firefox-evil-insert)
+  (setq exwm-input-line-mode-passthrough nil)
+  (evil-insert-state))
 
 ;;;; Implicitly enter insert mode
 (defvar exwm-firefox-evil-insert-on-new-tab t
@@ -77,13 +79,29 @@ Firefox variant can be assigned in 'exwm-firefox-evil-firefox-name`"
 
 ;; Auto enter insert mode on some actions
 (if exwm-firefox-evil-insert-on-new-tab
-    (advice-add #'exwm-firefox-core-tab-new :after #'evil-insert-state))
+    (advice-add #'exwm-firefox-core-tab-new :after #'exwm-firefox-evil-insert))
 
-(advice-add #'exwm-firefox-core-toggle-focus-search-bar :after #'evil-insert-state)
-(advice-add #'exwm-firefox-core-find :after #'evil-insert-state)
-(advice-add #'exwm-firefox-core-quick-find :after #'evil-insert-state)
+(advice-add #'exwm-firefox-core-toggle-focus-search-bar :after #'exwm-firefox-evil-insert)
+(advice-add #'exwm-firefox-core-find :after #'exwm-firefox-evil-insert)
+(advice-add #'exwm-firefox-core-quick-find :after #'exwm-firefox-evil-insert)
 
 ;;; Keys
+;; Bind normal
+(define-key exwm-firefox-evil-mode-map [remap evil-normal-state] 'exwm-firefox-evil-normal)
+(define-key exwm-firefox-evil-mode-map [remap evil-force-normal-state] 'exwm-firefox-evil-normal)
+;; Deselect visualal selection
+(define-key exwm-firefox-evil-mode-map [remap evil-exit-visual-state]
+  '(lambda () (interactive)
+     (exwm-firefox-core-left)
+     (exwm-firefox-core-right)
+     (exwm-firefox-evil-normal)))
+
+;; Bind insert
+(define-key exwm-firefox-evil-mode-map [remap evil-insert-state] 'exwm-firefox-evil-insert)
+(define-key exwm-firefox-evil-mode-map [remap evil-insert] 'exwm-firefox-evil-insert)
+(define-key exwm-firefox-evil-mode-map [remap evil-append] 'exwm-firefox-evil-insert)
+(define-key exwm-firefox-evil-mode-map [remap evil-substitute] 'exwm-firefox-evil-insert)
+
 ;; Basic movements
 (evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "k") 'exwm-firefox-core-up)
 (evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "j") 'exwm-firefox-core-down)
@@ -93,6 +111,9 @@ Firefox variant can be assigned in 'exwm-firefox-evil-firefox-name`"
 ;; Move by page
 (evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "C-f") 'exwm-firefox-core-page-down)
 (evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "C-b") 'exwm-firefox-core-page-up)
+
+(evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "<return>") '(lambda () (interactive) (exwm-input--fake-key 'return)))
+(evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "RET") '(lambda () (interactive) (exwm-input--fake-key 'return)))
 
 ;; Move by half page
 (evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "C-u") 'exwm-firefox-core-half-page-up)
@@ -116,18 +137,64 @@ Firefox variant can be assigned in 'exwm-firefox-evil-firefox-name`"
 
 ;; History
 (evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "L") 'exwm-firefox-core-history-forward)
-(evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "H") 'exwm-firefox-core-history-backward)
+(evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "H") 'exwm-firefox-core-history-back)
 
 ;; Search
 (evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "o") 'exwm-firefox-core-toggle-focus-search-bar)
+(evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "O") 'exwm-firefox-core-toggle-focus-search-bar)
 
 ;; Find
 (evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "/") 'exwm-firefox-core-quick-find)
 (evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "n") 'exwm-firefox-core-find-next)
 (evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "N") 'exwm-firefox-core-find-previous)
 
+;; Editing
+(evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "w") 'exwm-firefox-core-forward-word)
+(evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "e") 'exwm-firefox-core-forward-word)
+(evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "b") 'exwm-firefox-core-back-word)
+
+(evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "p") 'exwm-firefox-core-paste)
+(evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "y") 'exwm-firefox-core-copy)
+(evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "u") 'exwm-firefox-core-undo)
+(evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "C-r") 'exwm-firefox-core-redo)
+(evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "d") 'exwm-firefox-core-cut)
+(evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "c") 'exwm-firefox-core-cut)
+
+;; Select all and stop user from entering visual and insert state
+(evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "C-v") 'exwm-firefox-core-select-all)
+(evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "V") 'exwm-firefox-core-select-all)
+(evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "c") 'exwm-firefox-core-select-all)
+(evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "C") 'exwm-firefox-core-select-all)
+
 ;; Pass through esc when in normal mode
 (evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "<escape>") 'exwm-firefox-core-cancel)
+
+(evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "p") 'exwm-firefox-core-up-select)
+(evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "n") 'exwm-firefox-core-down-select)
+(evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "h") 'exwm-firefox-core-left-select)
+(evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "l") 'exwm-firefox-core-right-select)
+(evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "C-u") 'exwm-firefox-core-half-page-up-select)
+(evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "C-d") 'exwm-firefox-core-half-page-down-select)
+
+(evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "y") 'exwm-firefox-core-copy)
+(evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "d") 'exwm-firefox-core-cut)
+(evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "c")
+  '(lambda () (interactive)
+     (exwm-firefox-core-cut)
+     (exwm-firefox-evil-insert)))
+
+(evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "C-f") 'exwm-firefox-core-page-down-select)
+(evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "C-b") 'exwm-firefox-core-page-up-select)
+
+(evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "w") 'exwm-firefox-core-forward-word-select)
+(evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "e") 'exwm-firefox-core-forward-word-select)
+(evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "b") 'exwm-firefox-core-back-word-select)
+
+(evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "g g") 'exwm-firefox-core-top-select)
+(evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "G") 'exwm-firefox-core-bottom-select)
+
+(evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "0") 'exwm-firefox-core-top-select)
+(evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "$") 'exwm-firefox-core-bottom-select)
 
 (provide 'exwm-firefox-evil)
 
