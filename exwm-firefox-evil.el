@@ -206,8 +206,8 @@ Firefox variant can be assigned in 'exwm-firefox-evil-firefox-name`"
 (evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "c") 'exwm-firefox-evil-visual-change)
 (evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "C") 'exwm-firefox-evil-visual-change)
 
-(evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "r") 'exwm-firefox-core-cut)
-(evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "R") 'exwm-firefox-core-cut)
+(evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "r") 'exwm-firefox-core-cut)
+(evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "R") 'exwm-firefox-core-cut)
 
 ;; Send enter to firefox
 (evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "<return>") '(lambda () (interactive) (exwm-input--fake-key 'return)))
