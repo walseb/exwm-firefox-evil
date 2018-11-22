@@ -43,13 +43,26 @@
 (defun exwm-firefox-evil-mode-enable ()
   "Enable 'exwm-firefox-evil-mode`."
   (interactive)
-  (add-hook 'exwm-manage-finish-hook 'exwm-firefox-evil-activate))
+  (add-hook 'exwm-manage-finish-hook 'exwm-firefox-evil-activate)
+  ;; Auto enter insert mode on some actions
+  (if exwm-firefox-evil-insert-on-new-tab
+      (advice-add #'exwm-firefox-core-tab-new :after #'exwm-firefox-evil-insert))
+
+  (advice-add #'exwm-firefox-core-toggle-focus-search-bar :after #'exwm-firefox-evil-insert)
+  (advice-add #'exwm-firefox-core-find :after #'exwm-firefox-evil-insert)
+  (advice-add #'exwm-firefox-core-quick-find :after #'exwm-firefox-evil-insert))
 
 ;;;###autoload
 (defun exwm-firefox-evil-mode-disable ()
   "Disable 'exwm-firefox-evil-mode`."
   (interactive)
-  (remove-hook 'exwm-manage-finish-hook 'exwm-firefox-evil-activate))
+  (remove-hook 'exwm-manage-finish-hook 'exwm-firefox-evil-activate)
+
+  ;; Clean up advice
+  (advice-remove #'exwm-firefox-core-tab-new #'exwm-firefox-evil-insert)
+  (advice-remove #'exwm-firefox-core-toggle-focus-search-bar #'exwm-firefox-evil-insert)
+  (advice-remove #'exwm-firefox-core-find #'exwm-firefox-evil-insert)
+  (advice-remove #'exwm-firefox-core-quick-find #'exwm-firefox-evil-insert))
 
 (defvar exwm-firefox-evil-firefox-class-name '("Firefox" "Icecat")
   "The class name used for detecting if a firefox buffer is selected.")
@@ -79,13 +92,6 @@ Firefox variant can be assigned in 'exwm-firefox-evil-firefox-name`"
 (defvar exwm-firefox-evil-insert-on-new-tab t
   "If non-nil, auto enter insert mode after opening new tab.")
 
-;; Auto enter insert mode on some actions
-(if exwm-firefox-evil-insert-on-new-tab
-    (advice-add #'exwm-firefox-core-tab-new :after #'exwm-firefox-evil-insert))
-
-(advice-add #'exwm-firefox-core-toggle-focus-search-bar :after #'exwm-firefox-evil-insert)
-(advice-add #'exwm-firefox-core-find :after #'exwm-firefox-evil-insert)
-(advice-add #'exwm-firefox-core-quick-find :after #'exwm-firefox-evil-insert)
 
 ;;; Keys
 ;; Bind normal
