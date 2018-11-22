@@ -3,5 +3,16 @@ exwm-firefox-evil makes firefox's control scheme modal. It uses vi-like keys and
 
 To get link-hints you have to download a link-hint addon to firefox and define a new function to send that key to firefox on call like those in =exwm-firefox-core=.
 
+** Install
+#+BEGIN_SRC emacs-lisp
+  (require 'exwm-firefox-evil)
+  (exwm-firefox-evil-mode-enable)
+#+END_SRC
+
+** Disable
+#+BEGIN_SRC emacs-lisp
+  (exwm-firefox-evil-mode-disable)
+#+END_SRC
+
 ** Know bugs
 Mouse clicks only works in insert state
