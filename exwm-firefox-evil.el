@@ -39,11 +39,13 @@
 (define-minor-mode exwm-firefox-evil-mode nil nil nil exwm-firefox-evil-mode-map)
 
 ;;;; Activation
+;;;###autoload
 (defun exwm-firefox-evil-mode-enable ()
   "Enable 'exwm-firefox-evil-mode`."
   (interactive)
   (add-hook 'exwm-manage-finish-hook 'exwm-firefox-evil-activate))
 
+;;;###autoload
 (defun exwm-firefox-evil-mode-disable ()
   "Disable 'exwm-firefox-evil-mode`."
   (interactive)
