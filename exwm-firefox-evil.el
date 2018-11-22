@@ -112,6 +112,7 @@ Firefox variant can be assigned in 'exwm-firefox-evil-firefox-name`"
 (define-key exwm-firefox-evil-mode-map [remap evil-insert-state] 'exwm-firefox-evil-insert)
 (define-key exwm-firefox-evil-mode-map [remap evil-insert] 'exwm-firefox-evil-insert)
 (define-key exwm-firefox-evil-mode-map [remap evil-substitute] 'exwm-firefox-evil-insert)
+(define-key exwm-firefox-evil-mode-map [remap substitute] 'exwm-firefox-evil-insert)
 (define-key exwm-firefox-evil-mode-map [remap evil-append]
   '(lambda () (interactive)
      ;; When entering insert state via append the cursor moves to the right
