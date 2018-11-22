@@ -67,7 +67,7 @@
 (defvar exwm-firefox-evil-firefox-class-name '("Firefox" "Icecat")
   "The class name used for detecting if a firefox buffer is selected.")
 
-(defun exwm-firefox-evil-activate ()
+(defun exwm-firefox-evil-auto-activate ()
   "Activates exwm-firefox mode when buffer is firefox.
 Firefox variant can be assigned in 'exwm-firefox-evil-firefox-name`"
   (if (member exwm-class-name exwm-firefox-evil-firefox-class-name)
@@ -91,7 +91,6 @@ Firefox variant can be assigned in 'exwm-firefox-evil-firefox-name`"
 ;;;; Implicitly enter insert mode
 (defvar exwm-firefox-evil-insert-on-new-tab t
   "If non-nil, auto enter insert mode after opening new tab.")
-
 
 ;;; Keys
 ;; Bind normal
@@ -189,8 +188,8 @@ Firefox variant can be assigned in 'exwm-firefox-evil-firefox-name`"
 
 ;;; Visual state
 ;; Basic movement
-(evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "p") 'exwm-firefox-core-up-select)
-(evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "n") 'exwm-firefox-core-down-select)
+(evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "k") 'exwm-firefox-core-up-select)
+(evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "j") 'exwm-firefox-core-down-select)
 (evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "h") 'exwm-firefox-core-left-select)
 (evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "l") 'exwm-firefox-core-right-select)
 
@@ -203,7 +202,9 @@ Firefox variant can be assigned in 'exwm-firefox-evil-firefox-name`"
 
 ;; Editing
 (evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "y") 'exwm-firefox-core-copy)
+(evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "Y") 'exwm-firefox-core-copy)
 (evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "d") 'exwm-firefox-core-cut)
+(evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "D") 'exwm-firefox-core-cut)
 
 (defun exwm-firefox-evil-visual-change ()
   "Change text in visual mode."
@@ -243,8 +244,9 @@ Firefox variant can be assigned in 'exwm-firefox-evil-firefox-name`"
 (evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "n") 'exwm-firefox-core-find-next)
 (evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "N") 'exwm-firefox-core-find-previous)
 
-;; Misc
+;; Prevent user from exiting visual state without exwm-firefox-evil noticing
 (evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "u") 'exwm-firefox-evil-normal)
+(evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "U") 'exwm-firefox-evil-normal)
 
 (provide 'exwm-firefox-evil)
 
