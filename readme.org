@@ -1,5 +1,5 @@
 * exwm-firefox-evil - Evil-mode keys in firefox
-=exwm-firefox-evil= makes firefox keys modal and binds them to vi-like keys without using any addons. It does this using =exwm-firefox-core=.
+exwm-firefox-evil makes firefox's control scheme modal and binds them to vi-like keys without using any addons. It does this implementing [[https://github.com/walseb/exwm-firefox-core][exwm-firefox-core]].
 
 To get link-hints you have to download a link-hint addon to firefox and define a new function to send that key to firefox on call like those in =exwm-firefox-core=.
 
