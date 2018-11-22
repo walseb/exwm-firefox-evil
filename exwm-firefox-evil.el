@@ -177,6 +177,7 @@ Firefox variant can be assigned in 'exwm-firefox-evil-firefox-name`"
 (evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "u") 'exwm-firefox-core-undo)
 (evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "C-r") 'exwm-firefox-core-redo)
 (evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "d") 'exwm-firefox-core-cut)
+(evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "D") 'exwm-firefox-core-cut)
 (evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "c") 'exwm-firefox-core-cut)
 (evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "C") 'exwm-firefox-core-cut)
 
