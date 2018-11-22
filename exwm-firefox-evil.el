@@ -96,9 +96,9 @@ Firefox variant can be assigned in 'exwm-firefox-evil-firefox-name`"
      (exwm-firefox-evil-normal)))
 
 (define-key exwm-firefox-evil-mode-map [remap evil-force-normal-state] 'exwm-firefox-evil-normal)
-;; Deselect visualal selection
 (define-key exwm-firefox-evil-mode-map [remap evil-exit-visual-state]
   '(lambda () (interactive)
+     ;; Unmark any selection
      (exwm-firefox-core-left)
      (exwm-firefox-core-right)
      (exwm-firefox-evil-normal)))
