@@ -43,7 +43,7 @@
 (defun exwm-firefox-evil-mode-enable ()
   "Enable 'exwm-firefox-evil-mode`."
   (interactive)
-  (add-hook 'exwm-manage-finish-hook 'exwm-firefox-evil-activate)
+  (add-hook 'exwm-manage-finish-hook 'exwm-firefox-evil-auto-activate)
   ;; Auto enter insert mode on some actions
   (if exwm-firefox-evil-insert-on-new-tab
       (advice-add #'exwm-firefox-core-tab-new :after #'exwm-firefox-evil-insert))
@@ -56,7 +56,7 @@
 (defun exwm-firefox-evil-mode-disable ()
   "Disable 'exwm-firefox-evil-mode`."
   (interactive)
-  (remove-hook 'exwm-manage-finish-hook 'exwm-firefox-evil-activate)
+  (remove-hook 'exwm-manage-finish-hook 'exwm-firefox-evil-auto-activate)
 
   ;; Clean up advice
   (advice-remove #'exwm-firefox-core-tab-new #'exwm-firefox-evil-insert)
