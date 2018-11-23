@@ -49,6 +49,7 @@
 
 (defun exwm-firefox-evil-exit-visual ()
   "Exit visual state properly."
+  (interactive)
   ;; Unmark any selection
   (exwm-firefox-core-left)
   (exwm-firefox-core-right)
@@ -106,8 +107,8 @@
 (evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "L") 'exwm-firefox-core-history-forward)
 (evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "H") 'exwm-firefox-core-history-back)
 ;; Search
-(evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "o") 'exwm-firefox-core-toggle-focus-search-bar)
-(evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "O") 'exwm-firefox-core-toggle-focus-search-bar)
+(evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "o") 'exwm-firefox-core-focus-search-bar)
+(evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "O") 'exwm-firefox-core-focus-search-bar)
 ;; Find
 (evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "/") 'exwm-firefox-core-quick-find)
 (evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "n") 'exwm-firefox-core-find-next)
@@ -188,7 +189,7 @@
   (if exwm-firefox-evil-insert-on-new-tab
       (advice-add #'exwm-firefox-core-tab-new :after #'exwm-firefox-evil-insert))
 
-  (advice-add #'exwm-firefox-core-toggle-focus-search-bar :after #'exwm-firefox-evil-insert)
+  (advice-add #'exwm-firefox-core-focus-search-bar :after #'exwm-firefox-evil-insert)
   (advice-add #'exwm-firefox-core-find :after #'exwm-firefox-evil-insert)
   (advice-add #'exwm-firefox-core-quick-find :after #'exwm-firefox-evil-insert))
 
@@ -200,7 +201,7 @@
 
   ;; Clean up advice
   (advice-remove #'exwm-firefox-core-tab-new #'exwm-firefox-evil-insert)
-  (advice-remove #'exwm-firefox-core-toggle-focus-search-bar #'exwm-firefox-evil-insert)
+  (advice-remove #'exwm-firefox-core-focus-search-bar #'exwm-firefox-evil-insert)
   (advice-remove #'exwm-firefox-core-find #'exwm-firefox-evil-insert)
   (advice-remove #'exwm-firefox-core-quick-find #'exwm-firefox-evil-insert))
 
