@@ -33,7 +33,6 @@
 (require 'evil-core)
 (require 'exwm-firefox-core)
 
-
 ;;; State transitions
 (defun exwm-firefox-evil-normal ()
   "Pass every key directly to Emacs."
@@ -125,6 +124,7 @@
 (evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "D") 'exwm-firefox-core-cut)
 (evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "c") 'exwm-firefox-core-cut)
 (evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "C") 'exwm-firefox-core-cut)
+(evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "<deletechar>") 'exwm-firefox-core-delete)
 ;; Select all and stop user from entering visual and insert state
 (evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "C-v") 'exwm-firefox-core-select-all)
 (evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "V") 'exwm-firefox-core-select-all)
