@@ -6,16 +6,8 @@ To get link-hints you have to download a link-hint addon to firefox and define a
 ** Install
 #+BEGIN_SRC emacs-lisp
   (require 'exwm-firefox-evil)
-#+END_SRC
-
-** Enable
-#+BEGIN_SRC emacs-lisp
-  (exwm-firefox-evil-mode-enable)
-#+END_SRC
-
-** Disable
-#+BEGIN_SRC emacs-lisp
-  (exwm-firefox-evil-mode-disable)
+  ;; Auto enable exwm-firefox-evil-mode on all firefox buffers
+  (add-hook 'exwm-manage-finish-hook 'exwm-firefox-evil-activate-if-firefox)
 #+END_SRC
 
 ** Know bugs

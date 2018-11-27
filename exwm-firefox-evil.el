@@ -200,11 +200,13 @@
     (advice-remove #'exwm-firefox-core-find #'exwm-firefox-evil-insert)
     (advice-remove #'exwm-firefox-core-quick-find #'exwm-firefox-evil-insert)))
 
-(define-globalized-minor-mode global-exwm-firefox-evil-mode
-  exwm-firefox-mode
-  (lambda ()
-    (if (member exwm-class-name exwm-firefox-evil-firefox-class-name)
-	(exwm-firefox-evil-mode 1))))
+;;;###autoload
+(defun exwm-firefox-evil-activate-if-firefox ()
+  "Activates exwm-firefox mode when buffer is firefox.
+Firefox variant can be assigned in 'exwm-firefox-evil-firefox-name`"
+  (interactive)
+  (if (member exwm-class-name exwm-firefox-evil-firefox-class-name)
+      (exwm-firefox-evil-mode 1)))
 
 (provide 'exwm-firefox-evil)
 
