@@ -33,6 +33,12 @@
 (require 'evil-core)
 (require 'exwm-firefox-core)
 
+(defvar exwm-firefox-evil-firefox-class-name '("Firefox" "Icecat")
+  "The class name used for detecting if a firefox buffer is selected.")
+
+(defvar exwm-firefox-evil-insert-on-new-tab t
+  "If non-nil, auto enter insert mode after opening new tab.")
+
 ;;; State transitions
 (defun exwm-firefox-evil-normal ()
   "Pass every key directly to Emacs."
@@ -179,6 +185,7 @@
 (define-minor-mode exwm-firefox-evil-mode nil nil nil exwm-firefox-evil-mode-map
   (if exwm-firefox-evil-mode
       (progn
+	(exwm-firefox-evil-normal)
 	(add-hook 'exwm-manage-finish-hook 'exwm-firefox-evil-auto-activate)
 	;; Auto enter insert mode on some actions
 	(if exwm-firefox-evil-insert-on-new-tab
@@ -195,20 +202,11 @@
     (advice-remove #'exwm-firefox-core-find #'exwm-firefox-evil-insert)
     (advice-remove #'exwm-firefox-core-quick-find #'exwm-firefox-evil-insert)))
 
-  (defvar exwm-firefox-evil-insert-on-new-tab t
-    "If non-nil, auto enter insert mode after opening new tab.")
-
-  (defvar exwm-firefox-evil-firefox-class-name '("Firefox" "Icecat")
-    "The class name used for detecting if a firefox buffer is selected.")
-
-;;;; Activation
-(defun exwm-firefox-evil-auto-activate ()
-  "Activates exwm-firefox mode when buffer is firefox.
-Firefox variant can be assigned in 'exwm-firefox-evil-firefox-name`"
-  (if (member exwm-class-name exwm-firefox-evil-firefox-class-name)
-      (progn
-	(exwm-firefox-evil-mode 1)
-	(exwm-firefox-evil-normal))))
+(define-globalized-minor-mode global-exwm-firefox-evil-mode
+  exwm-firefox-mode
+  (lambda ()
+    (if (member exwm-class-name exwm-firefox-evil-firefox-class-name)
+	(exwm-firefox-evil-mode 1))))
 
 (provide 'exwm-firefox-evil)
 
