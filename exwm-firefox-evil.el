@@ -186,7 +186,6 @@
   (if exwm-firefox-evil-mode
       (progn
 	(exwm-firefox-evil-normal)
-	(add-hook 'exwm-manage-finish-hook 'exwm-firefox-evil-auto-activate)
 	;; Auto enter insert mode on some actions
 	(if exwm-firefox-evil-insert-on-new-tab
 	    (advice-add #'exwm-firefox-core-tab-new :after #'exwm-firefox-evil-insert))
@@ -195,7 +194,6 @@
 	(advice-add #'exwm-firefox-core-find :after #'exwm-firefox-evil-insert)
 	(advice-add #'exwm-firefox-core-quick-find :after #'exwm-firefox-evil-insert))
 
-    (remove-hook 'exwm-manage-finish-hook 'exwm-firefox-evil-auto-activate)
     ;; Clean up advice
     (advice-remove #'exwm-firefox-core-tab-new #'exwm-firefox-evil-insert)
     (advice-remove #'exwm-firefox-core-focus-search-bar #'exwm-firefox-evil-insert)
