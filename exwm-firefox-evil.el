@@ -33,7 +33,7 @@
 (require 'evil-core)
 (require 'exwm-firefox-core)
 
-(defvar exwm-firefox-evil-firefox-class-name '("Firefox" "Icecat")
+(defvar exwm-firefox-evil-firefox-class-name '("Firefox" "Iceweasel" "Icecat")
   "The class name used for detecting if a firefox buffer is selected.")
 
 (defvar exwm-firefox-evil-insert-on-new-tab t
