@@ -1,3 +1,4 @@
+[[https://melpa.org/#/exwm-firefox-evil][file:https://melpa.org/packages/exwm-firefox-evil-badge.svg]]
 * exwm-firefox-evil - Evil-mode keys in firefox
 exwm-firefox-evil makes firefox's control scheme modal. It uses vi-like keys and doesn't require any addons. It does this by implementing [[https://github.com/walseb/exwm-firefox-core][exwm-firefox-core]] which sends fake keys to firefox using exwm.
 
