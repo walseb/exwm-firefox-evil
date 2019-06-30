@@ -48,11 +48,12 @@
   :type 'char
   :group 'exwm-firefox-evil)
 
-(defcustom exwm-firefox-evil-link-hint-ends-with-enter t
-  "Should be set to true if your link hinter requires you to press enter in
-order to follow a link.
-This allows exwm-firefox to go back to normal mode after link hinting is done"
-  :type 'boolean
+(defcustom exwm-firefox-evil-link-hint-end-key 'return
+  "Should be set to a non-nil key if your link hinter requires you to press the
+key in order to follow a link.
+If it's non-nil, it allows exwm-firefox-evil to go back to normal mode after link hinting is done.
+Otherwise exwm-firefox-evil enters insert mode so that you can type out the link hint."
+  :type 'char
   :group 'exwm-firefox-evil)
 
 ;;; State transitions
@@ -114,10 +115,10 @@ If END-KEY is non-nil, stop sending keys if that key is sent"
   "Enables exwm-firefox link hints."
   (interactive)
   (exwm-input--fake-key exwm-firefox-evil-link-hint-key)
-  (if exwm-firefox-evil-link-hint-ends-with-enter
+  (if exwm-firefox-evil-link-hint-end-key
       (progn
 	(exwm-firefox-input-send-next-key 12 ?\C-m)
-	(exwm-input--fake-key 'return))
+	(exwm-input--fake-key exwm-firefox-evil-link-hint-end-key))
     (exwm-firefox-evil-insert)))
 
 ;;; Keys
