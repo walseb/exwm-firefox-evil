@@ -33,11 +33,27 @@
 (require 'evil-core)
 (require 'exwm-firefox-core)
 
-(defvar exwm-firefox-evil-firefox-class-name '("Firefox" "Nightly" "Iceweasel" "Icecat")
-  "The class name used for detecting if a firefox buffer is selected.")
+(defcustom exwm-firefox-evil-firefox-class-name '("Firefox" "Nightly" "Iceweasel" "Icecat")
+  "The class name used for detecting if a firefox buffer is selected."
+  :type 'list
+  :group 'exwm-firefox-evil)
 
-(defvar exwm-firefox-evil-insert-on-new-tab t
-  "If non-nil, auto enter insert mode after opening new tab.")
+(defcustom exwm-firefox-evil-insert-on-new-tab nil
+  "If non-nil, auto enter insert mode after opening new tab."
+  :type 'boolean
+  :group 'exwm-firefox-evil)
+
+(defcustom exwm-firefox-evil-link-hint-key ?\C-m
+  "Character your link hinter uses to activate."
+  :type 'char
+  :group 'exwm-firefox-evil)
+
+(defcustom exwm-firefox-evil-link-hint-ends-with-enter t
+  "Should be set to true if your link hinter requires you to press enter in
+order to follow a link.
+This allows exwm-firefox to go back to normal mode after link hinting is done"
+  :type 'boolean
+  :group 'exwm-firefox-evil)
 
 ;;; State transitions
 (defun exwm-firefox-evil-normal ()
@@ -65,6 +81,44 @@
   (interactive)
   (exwm-firefox-core-cut)
   (exwm-firefox-evil-insert))
+
+(cl-defun exwm-firefox-input-send-next-key (times &optional end-key)
+  "Send next key to client window.
+
+EXWM will prompt for the key to send.  This command can be prefixed to send
+multiple keys.
+
+If END-KEY is non-nil, stop sending keys if that key is sent"
+  (interactive "p")
+  (exwm--log)
+  (unless (derived-mode-p 'exwm-mode)
+    (cl-return-from exwm-input-send-next-key))
+  (when (> times 12) (setq times 12))
+  (catch 'exit
+    (let (key keys)
+      (dotimes (i times)
+	;; Skip events not from keyboard
+	(let ((exwm-input-line-mode-passthrough t))
+	  (catch 'break
+	    (while t
+	      (setq key (read-key (format "Send key: %s (%d/%d)"
+					  (key-description keys)
+					  (1+ i) times)))
+	      (unless (listp key) (throw 'break nil)))))
+	(setq keys (vconcat keys (vector key)))
+	(if (and end-key (eq key end-key))
+	    (throw 'exit nil)
+	  (exwm-input--fake-key key))))))
+
+(defun exwm-firefox-evil-link-hint ()
+  "Enables exwm-firefox link hints."
+  (interactive)
+  (exwm-input--fake-key exwm-firefox-evil-link-hint-key)
+  (if exwm-firefox-evil-link-hint-ends-with-enter
+      (progn
+	(exwm-firefox-input-send-next-key 12 ?\C-m)
+	(exwm-input--fake-key 'return))
+    (exwm-firefox-evil-insert)))
 
 ;;; Keys
 (defvar exwm-firefox-evil-mode-map (make-sparse-keymap))
@@ -137,6 +191,8 @@
 ;; Pass through esc when in normal mode
 (evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "<escape>") 'exwm-firefox-core-cancel)
 
+(evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "f") 'exwm-firefox-evil-link-hint)
+
     ;;;; Visual
 ;; Basic movement
 (evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "k") 'exwm-firefox-core-up-select)
@@ -187,14 +243,15 @@
       (progn
 	(exwm-firefox-evil-normal)
 	;; Auto enter insert mode on some actions
-	(if exwm-firefox-evil-insert-on-new-tab
-	    (advice-add #'exwm-firefox-core-tab-new :after #'exwm-firefox-evil-insert))
+	(when exwm-firefox-evil-insert-on-new-tab
+	  (advice-add #'exwm-firefox-core-tab-new :after #'exwm-firefox-evil-insert))
 
 	(advice-add #'exwm-firefox-core-find :after #'exwm-firefox-evil-insert)
 	(advice-add #'exwm-firefox-core-quick-find :after #'exwm-firefox-evil-insert))
 
     ;; Clean up advice
-    (advice-remove #'exwm-firefox-core-tab-new #'exwm-firefox-evil-insert)
+    (when exwm-firefox-evil-insert-on-new-tab
+      (advice-remove #'exwm-firefox-core-tab-new #'exwm-firefox-evil-insert))
     (advice-remove #'exwm-firefox-core-find #'exwm-firefox-evil-insert)
     (advice-remove #'exwm-firefox-core-quick-find #'exwm-firefox-evil-insert)))
 
