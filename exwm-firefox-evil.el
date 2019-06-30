@@ -24,8 +24,8 @@
 ;; This package implements exwm-firefox-core to allow for modal editing in
 ;; firefox like in evil-mode and vi
 ;;
-;; To get link-hints you have to define a new key like below and download a
-;; link-hint addon to firefox.
+;; This package asumes that the firefox link hint package Yet Another Hints Extension from https://addons.mozilla.org/en-US/firefox/addon/yet-another-hints-extension
+;; If you use any other link hint package you might need to configure the variables starting with `exwm-firefox-evil-link-hint...'
 
 ;;; Code:
 
@@ -44,13 +44,19 @@
   :group 'exwm-firefox-evil)
 
 (defcustom exwm-firefox-evil-link-hint-key ?\C-m
-  "Character your link hinter uses to activate."
+  "Key your link hinter uses to activate."
+  :type 'char
+  :group 'exwm-firefox-evil)
+
+(defcustom exwm-firefox-evil-link-hint-new-tab-key ?\C-j
+  "Key your link hinter uses to activate and open links in a new tab."
   :type 'char
   :group 'exwm-firefox-evil)
 
 (defcustom exwm-firefox-evil-link-hint-end-key 'return
   "Should be set to a non-nil key if your link hinter requires you to press the
-key in order to follow a link.
+key in order to follow a link after you have selected the correct link hint. Otherwise it should be set to nil.
+
 If it's non-nil, it allows exwm-firefox-evil to go back to normal mode after link hinting is done.
 Otherwise exwm-firefox-evil enters insert mode so that you can type out the link hint."
   :type 'char
@@ -112,12 +118,22 @@ If END-KEY is non-nil, stop sending keys if that key is sent"
 	  (exwm-input--fake-key key))))))
 
 (defun exwm-firefox-evil-link-hint ()
-  "Enables exwm-firefox link hints."
+  "Enables link hints."
   (interactive)
-  (exwm-input--fake-key exwm-firefox-evil-link-hint-key)
+  (exwm-firefox-evil--link-hint exwm-firefox-evil-link-hint-key))
+
+(defun exwm-firefox-evil-link-hint-new-tab ()
+  "Enables link hints and opens the link in a new tab."
+  (interactive)
+  (exwm-firefox-evil--link-hint exwm-firefox-evil-link-hint-new-tab-key))
+
+(defun exwm-firefox-evil--link-hint (link-hint-key)
+  "Enables link hints.
+LINK-HINT-KEY is the key that your link hinter needs to start."
+  (exwm-input--fake-key link-hint-key)
   (if exwm-firefox-evil-link-hint-end-key
       (progn
-	(exwm-firefox-input-send-next-key 12 ?\C-m)
+	(exwm-firefox-input-send-next-key 12 exwm-firefox-evil-link-hint-end-key)
 	(exwm-input--fake-key exwm-firefox-evil-link-hint-end-key))
     (exwm-firefox-evil-insert)))
 
@@ -193,6 +209,7 @@ If END-KEY is non-nil, stop sending keys if that key is sent"
 (evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "<escape>") 'exwm-firefox-core-cancel)
 
 (evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "f") 'exwm-firefox-evil-link-hint)
+(evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "F") 'exwm-firefox-evil-link-hint-new-tab)
 
     ;;;; Visual
 ;; Basic movement
