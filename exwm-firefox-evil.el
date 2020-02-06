@@ -1,4 +1,4 @@
-;;; exwm-firefox-evil.el --- Firefox hotkeys to functions -*- lexical-binding: t -*-
+;;; exwm-firefox-evil.el --- evil-mode implementation of exwm-firefox-core -*- lexical-binding: t -*-
 
 ;; Author: Sebastian Wålinder <s.walinder@gmail.com>
 ;; URL: https://github.com/walseb/exwm-firefox-evil
