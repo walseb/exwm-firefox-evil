@@ -11,5 +11,14 @@ To get link-hints you have to download a link-hint addon to firefox and define a
   (add-hook 'exwm-manage-finish-hook 'exwm-firefox-evil-activate-if-firefox)
 #+END_SRC
 
+You also need to add ~escape~ to ~exwm-input-prefix-keys~ so that escape is passed to emacs instead of firefox.
+#+BEGIN_SRC emacs-lisp
+(dolist (k `(
+	     escape
+	     ))
+  (cl-pushnew k exwm-input-prefix-keys))
+#+END_SRC
+Keep in mind that this affects all exwm-applications. If you want to get your escape key back in those applications you could bind the escape key to ~(exwm-input--fake-key 'escape)~ in your own minor mode that activates in all exwm-buffers just like I did in this package. For the conditional statement to avoid firefox buffers, just negate the checks in the function ~exwm-firefox-evil-activate-if-firefox~
+
 ** Know bugs
 Mouse clicks only works in insert state
