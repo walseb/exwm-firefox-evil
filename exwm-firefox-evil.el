@@ -40,17 +40,15 @@
   "If non-nil, auto enter insert mode after opening new tab.")
 
 ;;; State transitions
-(defun exwm-firefox-evil-normal ()
+(defun exwm-firefox-evil-passthrough ()
   "Pass every key directly to Emacs."
   (interactive)
-  (setq-local exwm-input-line-mode-passthrough t)
-  (evil-normal-state))
+  (setq-local exwm-input-line-mode-passthrough t))
 
-(defun exwm-firefox-evil-insert ()
+(defun exwm-firefox-evil-passthrough-disable ()
   "Pass every key to firefox."
   (interactive)
-  (setq-local exwm-input-line-mode-passthrough nil)
-  (evil-insert-state))
+  (setq-local exwm-input-line-mode-passthrough nil))
 
 (defun exwm-firefox-evil-exit-visual ()
   "Exit visual state properly."
@@ -58,29 +56,22 @@
   ;; Unmark any selection
   (exwm-firefox-core-left)
   (exwm-firefox-core-right)
-  (exwm-firefox-evil-normal))
+  (evil-normal-state))
 
 (defun exwm-firefox-evil-visual-change ()
   "Change text in visual mode."
   (interactive)
   (exwm-firefox-core-cut)
-  (exwm-firefox-evil-insert))
+  (evil-insert-state))
 
 ;;; Keys
 (defvar exwm-firefox-evil-mode-map (make-sparse-keymap))
 
-    ;;;; Transitions
+;;;; Transitions
 ;; Bind normal
 (define-key exwm-firefox-evil-mode-map [remap evil-exit-visual-state] 'exwm-firefox-evil-exit-visual)
-(define-key exwm-firefox-evil-mode-map [remap evil-normal-state] 'exwm-firefox-evil-normal)
-(define-key exwm-firefox-evil-mode-map [remap evil-force-normal-state] 'exwm-firefox-evil-normal)
-;; Bind insert
-(define-key exwm-firefox-evil-mode-map [remap evil-insert-state] 'exwm-firefox-evil-insert)
-(define-key exwm-firefox-evil-mode-map [remap evil-insert] 'exwm-firefox-evil-insert)
-(define-key exwm-firefox-evil-mode-map [remap evil-substitute] 'exwm-firefox-evil-insert)
-(define-key exwm-firefox-evil-mode-map [remap evil-append] 'exwm-firefox-evil-insert)
 
-    ;;;; Normal
+;;;; Normal
 ;; Basic movements
 (evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "k") 'exwm-firefox-core-up)
 (evil-define-key 'normal exwm-firefox-evil-mode-map (kbd "j") 'exwm-firefox-core-down)
@@ -177,28 +168,33 @@
 (evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "n") 'exwm-firefox-core-find-next)
 (evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "N") 'exwm-firefox-core-find-previous)
 ;; Prevent user from exiting visual state without exwm-firefox-evil noticing
-(evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "u") 'exwm-firefox-evil-normal)
-(evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "U") 'exwm-firefox-evil-normal)
+(evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "u") 'evil-normal-state)
+(evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "U") 'evil-normal-state)
 
 ;;; Mode
 ;;;###autoload
 (define-minor-mode exwm-firefox-evil-mode nil nil nil exwm-firefox-evil-mode-map
   (if exwm-firefox-evil-mode
       (progn
-	(exwm-firefox-evil-normal)
-	;; Auto enter insert mode on some actions
-	(if exwm-firefox-evil-insert-on-new-tab
-	    (advice-add #'exwm-firefox-core-tab-new :after #'exwm-firefox-evil-insert))
+        (add-hook 'evil-insert-state-exit-hook #'exwm-firefox-evil-passthrough nil t)
+        (add-hook 'evil-insert-state-entry-hook #'exwm-firefox-evil-passthrough-disable nil t)
+        (evil-normal-state)
+        ;; Auto enter insert mode on some actions
+        (if exwm-firefox-evil-insert-on-new-tab
+            (advice-add #'exwm-firefox-core-tab-new :after #'evil-insert-state))
 
-	(advice-add #'exwm-firefox-core-focus-search-bar :after #'exwm-firefox-evil-insert)
-	(advice-add #'exwm-firefox-core-find :after #'exwm-firefox-evil-insert)
-	(advice-add #'exwm-firefox-core-quick-find :after #'exwm-firefox-evil-insert))
+        (advice-add #'exwm-firefox-core-focus-search-bar :after #'evil-insert-state)
+        (advice-add #'exwm-firefox-core-find :after #'evil-insert-state)
+        (advice-add #'exwm-firefox-core-quick-find :after #'evil-insert-state))
+
+    (remove-hook 'evil-insert-state-exit-hook #'exwm-firefox-evil-passthrough t)
+    (remove-hook 'evil-insert-state-entry-hook #'exwm-firefox-evil-passthrough-disable t)
 
     ;; Clean up advice
-    (advice-remove #'exwm-firefox-core-tab-new #'exwm-firefox-evil-insert)
-    (advice-remove #'exwm-firefox-core-focus-search-bar #'exwm-firefox-evil-insert)
-    (advice-remove #'exwm-firefox-core-find #'exwm-firefox-evil-insert)
-    (advice-remove #'exwm-firefox-core-quick-find #'exwm-firefox-evil-insert)))
+    (advice-remove #'exwm-firefox-core-tab-new #'evil-insert-state)
+    (advice-remove #'exwm-firefox-core-focus-search-bar #'evil-insert-state)
+    (advice-remove #'exwm-firefox-core-find #'evil-insert-state)
+    (advice-remove #'exwm-firefox-core-quick-find #'evil-insert-state)))
 
 ;;;###autoload
 (defun exwm-firefox-evil-activate-if-firefox ()
