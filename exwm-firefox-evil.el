@@ -22,10 +22,10 @@
 ;;; Commentary:
 
 ;; This package implements exwm-firefox-core to allow for modal editing in
-;; firefox like in evil-mode and vi
+;; Firefox like in evil-mode and vi
 ;;
 ;; To get link-hints you have to define a new key like below and download a
-;; link-hint addon to firefox.
+;; link-hint add-on to Firefox.
 
 ;;; Code:
 
@@ -34,7 +34,7 @@
 (require 'exwm-firefox-core)
 
 (defvar exwm-firefox-evil-firefox-class-name '("Firefox" "firefox" "Nightly" "Iceweasel" "Icecat")
-  "The class name used for detecting if a firefox buffer is selected.")
+  "The class name used for detecting if a Firefox buffer is selected.")
 
 (defvar exwm-firefox-evil-insert-on-new-tab t
   "If non-nil, auto enter insert mode after opening new tab.")
@@ -46,14 +46,14 @@
   (setq-local exwm-input-line-mode-passthrough t))
 
 (defun exwm-firefox-evil-passthrough-disable ()
-  "Pass every key to firefox."
+  "Pass every key to Firefox."
   (interactive)
   (setq-local exwm-input-line-mode-passthrough nil))
 
 (defun exwm-firefox-evil-exit-visual ()
   "Exit visual state properly."
   (interactive)
-  ;; Unmark any selection
+  ;; Un-mark any selection
   (exwm-firefox-core-left)
   (exwm-firefox-core-right)
   (evil-normal-state))
@@ -148,7 +148,7 @@
 (evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "C") 'exwm-firefox-evil-visual-change)
 (evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "r") 'exwm-firefox-core-cut)
 (evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "R") 'exwm-firefox-core-cut)
-;; Send enter to firefox
+;; Send enter to Firefox
 (evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "<return>") '(lambda () (interactive) (exwm-input--fake-key 'return)))
 (evil-define-key 'visual exwm-firefox-evil-mode-map (kbd "RET") '(lambda () (interactive) (exwm-input--fake-key 'return)))
 ;; Move by word
@@ -190,6 +190,9 @@
     (remove-hook 'evil-insert-state-exit-hook #'exwm-firefox-evil-passthrough t)
     (remove-hook 'evil-insert-state-entry-hook #'exwm-firefox-evil-passthrough-disable t)
 
+    ;; Return passthrough state
+    (exwm-firefox-evil-passthrough-disable)
+
     ;; Clean up advice
     (advice-remove #'exwm-firefox-core-tab-new #'evil-insert-state)
     (advice-remove #'exwm-firefox-core-focus-search-bar #'evil-insert-state)
@@ -198,7 +201,7 @@
 
 ;;;###autoload
 (defun exwm-firefox-evil-activate-if-firefox ()
-  "Activates exwm-firefox mode when buffer is firefox.
+  "Activates exwm-firefox mode when buffer is Firefox.
 Firefox variant can be assigned in 'exwm-firefox-evil-firefox-name`"
   (interactive)
   (if (member exwm-class-name exwm-firefox-evil-firefox-class-name)
